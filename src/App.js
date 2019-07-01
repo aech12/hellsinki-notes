@@ -3,6 +3,13 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  const b = new Promise((re, rj)=> {
+    setTimeout(() => {
+      re(10)
+    }, 5000);
+  })
+  const a = fetch(b)
+
   return (
     <div className="App">
       <header className="App-header">
