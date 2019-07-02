@@ -18,11 +18,14 @@ const App = () => {
     setNotes(res.data);
   };
   const mapNotes = () =>
-    notes.map((note, i) => (
+    notesToMap.map((note, i) => (
       <li key={note.id} onClick={() => putImportant(note.id)}>
         {note.id}: {note.content} {note.important ? '(!)' : ''}
       </li>
     ));
+  const notesToMap = showImportant
+    ? notes
+    : notes.filter(note => note.important);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -49,6 +52,10 @@ const App = () => {
     getNotes();
   };
 
+  const filterImportant = () => {
+    setShowImportant(!showImportant);
+  };
+
   const ifImportant = important ? 'important' : '';
   return (
     <div className='App'>
@@ -61,7 +68,7 @@ const App = () => {
         </button>
         <button type='submit'>Add Note</button>
       </form>
-      <button>Show Important</button>
+      <button onClick={filterImportant}>Show Important</button>
     </div>
   );
 };
