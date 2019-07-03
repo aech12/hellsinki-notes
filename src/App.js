@@ -1,27 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import './App.sass';
-import axios from 'axios';
+import noteService from './services/noteService';
+import Note from './components/Note';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [input, setInput] = useState('');
   const [important, setImportant] = useState(true);
   const [showImportant, setShowImportant] = useState(true);
-  const url = 'http://localhost:3001';
 
   useEffect(() => {
+    // console.log(typeof notes);
     getNotes();
-  }, [notes]);
+  }, []);
 
   const getNotes = async () => {
-    const res = await axios.get(`${url}/api/notes`);
+    const res = await noteService.getNotes();
     setNotes(res.data);
   };
+  const putImportant = async id => {
+    await noteService.putNote(id);
+    getNotes();
+  };
+  const deleteNote = async id => {
+    await noteService.delNote(id);
+    getNotes();
+  };
+
   const mapNotes = () =>
-    notesToMap.map((note, i) => (
-      <li key={note.id} onClick={() => putImportant(note.id)}>
-        {note.id}: {note.content} {note.important ? '(!)' : ''}
-      </li>
+    notesToMap.map(({ id, content, important }) => (
+      <Note
+        id={id}
+        key={id}
+        content={content}
+        important={important}
+        putImportant={putImportant}
+        deleteNote={deleteNote}
+      />
     ));
   const notesToMap = showImportant
     ? notes
@@ -29,16 +44,19 @@ const App = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    // if (!input) {
+    //   return;
+    // }
     const newnote = {
       content: input,
-      id: 4,
+      id: notes.length + 1,
       important
     };
-    const postNote = async () => {
-      await axios.post(`${url}/api/notes`, newnote);
+    const postNote = async newnote => {
+      await noteService.postNote(newnote);
       getNotes();
     };
-    postNote();
+    postNote(newnote);
     setInput('');
   };
   const inputChange = input => {
@@ -47,23 +65,19 @@ const App = () => {
   const setImportance = () => {
     setImportant(!important);
   };
-  const putImportant = async id => {
-    await axios.put(`${url}/notes/${id}`);
-    getNotes();
-  };
 
   const filterImportant = () => {
     setShowImportant(!showImportant);
   };
 
-  const ifImportant = important ? 'important' : '';
+  const importantClass = important ? 'important' : '';
   return (
     <div className='App'>
       <h1>Notes</h1>
       <ul>{mapNotes()}</ul>
       <form onSubmit={handleSubmit}>
         <input onChange={inputChange} value={input} />
-        <button onClick={setImportance} className={`button ${ifImportant}`}>
+        <button onClick={setImportance} className={`button ${importantClass}`}>
           !
         </button>
         <button type='submit'>Add Note</button>
