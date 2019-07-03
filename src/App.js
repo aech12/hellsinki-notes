@@ -8,6 +8,7 @@ const App = () => {
   const [input, setInput] = useState('');
   const [important, setImportant] = useState(true);
   const [showImportant, setShowImportant] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // console.log(typeof notes);
@@ -19,6 +20,7 @@ const App = () => {
     setNotes(res.data);
   };
   const putImportant = async id => {
+    setError('puterror');
     await noteService.putNote(id);
     getNotes();
   };
@@ -59,20 +61,32 @@ const App = () => {
     postNote(newnote);
     setInput('');
   };
+
   const inputChange = input => {
     setInput(input.target.value);
   };
   const setImportance = () => {
     setImportant(!important);
   };
-
   const filterImportant = () => {
     setShowImportant(!showImportant);
+  };
+
+  const showErrorMessage = () => {
+    if (!error) {
+      return null;
+    } else if (error) {
+      setTimeout(() => {
+        setError(null);
+      }, 2500);
+      return error;
+    }
   };
 
   const importantClass = important ? 'important' : '';
   return (
     <div className='App'>
+      <p>{showErrorMessage()}</p>
       <h1>Notes</h1>
       <ul>{mapNotes()}</ul>
       <form onSubmit={handleSubmit}>
