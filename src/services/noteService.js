@@ -1,4 +1,5 @@
 import axios from 'axios';
+// const url = 'https://helsinki-notes-api.herokuapp.com';
 const url = '';
 
 const getNotes = () => axios.get(`${url}/api/notes`);
