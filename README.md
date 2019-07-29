@@ -3,9 +3,8 @@ Helsinki Fullstack Notes List
 Working on:
 
 To work on:
-0.2
--Button (not submit) triggers form submit
--UseEffect: [arr] makes for infinite rerender so have to call getNotes everytime after each REST req. Find a better way
--Implement try/catch
-0.3
--add heroku https://helsinki-notes-api.herokuapp.com
+0.5
+- unlogged in users can use app but it wont change the Mongo db
+- delete note and put note gets called?
+- cannot add note with short length (only username should get this)
+- errors from backend should show reasonable messages (try adding a short text for example, front gets no useful error)

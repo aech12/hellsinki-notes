@@ -1,101 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import './App.sass';
 import noteService from './services/noteService';
-import Note from './components/Note';
+import AddNote from './containers/AddNote';
+import MapNotes from './containers/MapNotes';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
-  const [input, setInput] = useState('');
-  const [important, setImportant] = useState(true);
-  const [showImportant, setShowImportant] = useState(true);
+  const [showImportantOnly, setShowImportantOnly] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // console.log(typeof notes);
+    console.log(typeof notes);
     getNotes();
   }, []);
 
   const getNotes = async () => {
-    const res = await noteService.getNotes();
-    setNotes(res.data);
+    const initialNotes = await noteService.getNotes();
+    setNotes(initialNotes.data);
   };
   const putImportant = async id => {
-    setError('puterror');
-    await noteService.putNote(id);
-    getNotes();
+    try {
+      const changedNote = await noteService.putNote(id);
+      const newNotes = notes.map(note =>
+        changedNote.data.id !== note.id ? note : changedNote.data
+      );
+      setNotes(newNotes);
+    } catch (e) {
+      // setError('puterror');
+    }
   };
   const deleteNote = async id => {
     await noteService.delNote(id);
-    getNotes();
+    const notesWithoutDeletedNote = notes.filter(note => note.id !== id);
+    setNotes(notesWithoutDeletedNote);
   };
 
-  const mapNotes = () =>
-    notesToMap.map(({ id, content, important }) => (
-      <Note
-        id={id}
-        key={id}
-        content={content}
-        important={important}
-        putImportant={putImportant}
-        deleteNote={deleteNote}
-      />
-    ));
-  const notesToMap = showImportant
-    ? notes
-    : notes.filter(note => note.important);
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    // if (!input) {
-    //   return;
-    // }
-    const newnote = {
-      content: input,
-      id: notes.length + 1,
-      important
-    };
-    const postNote = async newnote => {
-      await noteService.postNote(newnote);
-      getNotes();
-    };
-    postNote(newnote);
-    setInput('');
-  };
-
-  const inputChange = input => {
-    setInput(input.target.value);
-  };
-  const setImportance = () => {
-    setImportant(!important);
-  };
   const filterImportant = () => {
-    setShowImportant(!showImportant);
+    setShowImportantOnly(!showImportantOnly);
   };
+  // const importantClass = important ? 'important' : '';
 
-  const showErrorMessage = () => {
-    if (!error) {
-      return null;
-    } else if (error) {
-      setTimeout(() => {
-        setError(null);
-      }, 2500);
-      return error;
-    }
-  };
-
-  const importantClass = important ? 'important' : '';
   return (
     <div className='App'>
-      <p>{showErrorMessage()}</p>
-      <h1>Notes</h1>
-      <ul>{mapNotes()}</ul>
-      <form onSubmit={handleSubmit}>
-        <input onChange={inputChange} value={input} />
-        <button onClick={setImportance} className={`button ${importantClass}`}>
-          !
-        </button>
-        <button type='submit'>Add Note</button>
-      </form>
+      {/* <p>{showErrorMessage()}</p> */}
+      <div>
+        <h1>Notes</h1>
+        <ul>
+          <MapNotes
+            notes={notes}
+            putImportant={putImportant}
+            deleteNote={deleteNote}
+            showImportantOnly={showImportantOnly}
+          />
+        </ul>
+      </div>
+      <AddNote notes={notes} setNotes={setNotes} />
       <button onClick={filterImportant}>Show Important</button>
     </div>
   );
