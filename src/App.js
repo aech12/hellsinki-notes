@@ -4,6 +4,7 @@ import noteService from './services/noteService';
 import AddNote from './containers/AddNote';
 import MapNotes from './containers/MapNotes';
 import ShowErrorMessage from './components/ShowError';
+import Login from './containers/Login';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -50,8 +51,9 @@ const App = () => {
     <div className='App'>
       {/* <p>{()}</p> */}
       <ShowErrorMessage message={errorMessage} />
+      <h1>Notes</h1>
+      <Login throwErrorMessage={throwErrorMessage} />
       <div>
-        <h1>Notes</h1>
         <ul>
           <MapNotes
             notes={notes}
