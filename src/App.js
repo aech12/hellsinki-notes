@@ -4,17 +4,25 @@ import noteService from './services/noteService';
 import AddNote from './containers/AddNote';
 import MapNotes from './containers/MapNotes';
 import ShowErrorMessage from './components/ShowError';
+import Logout from './components/Logout';
 import Login from './containers/Login';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [showImportantOnly, setShowImportantOnly] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    console.log(typeof notes);
+    // console.log(typeof notes);
     getNotes();
-  }, [0]);
+  }, []);
+  useEffect(() => {
+    const localUser = JSON.parse(window.localStorage.getItem('loginInfo'));
+    if (localUser) {
+      setUser(localUser);
+    }
+  }, []);
 
   const getNotes = async () => {
     const initialNotes = await noteService.getNotes();
@@ -52,7 +60,24 @@ const App = () => {
       {/* <p>{()}</p> */}
       <ShowErrorMessage message={errorMessage} />
       <h1>Notes</h1>
-      <Login throwErrorMessage={throwErrorMessage} />
+      {user === null ? (
+        <Login throwErrorMessage={throwErrorMessage} setUser={setUser} />
+      ) : (
+        <div>
+          <p>Hello {user.userForToken.username}!</p>
+          <Logout setUser={setUser} />
+          <AddNote
+            notes={notes}
+            setNotes={setNotes}
+            throwErrorMessage={throwErrorMessage}
+            token={user.token}
+          />
+        </div>
+      )}
+      {/* <p>Hello {user !== null && user.userForToken.username}!</p>
+      <Login throwErrorMessage={throwErrorMessage} setUser={setUser} />
+      <Logout setUser={setUser} /> */}
+
       <div>
         <ul>
           <MapNotes
@@ -63,11 +88,6 @@ const App = () => {
           />
         </ul>
       </div>
-      <AddNote
-        notes={notes}
-        setNotes={setNotes}
-        throwErrorMessage={throwErrorMessage}
-      />
       <button onClick={filterImportant}>Show Important</button>
     </div>
   );

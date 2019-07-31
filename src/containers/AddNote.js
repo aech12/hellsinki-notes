@@ -3,7 +3,7 @@ import '../App.sass';
 import noteService from '../services/noteService';
 import NewNote from '../components/NewNote';
 
-const AddNote = ({ notes, setNotes, throwErrorMessage }) => {
+const AddNote = ({ notes, setNotes, throwErrorMessage, token }) => {
   const [input, setInput] = useState('');
   const [important, setImportant] = useState(false);
 
@@ -13,8 +13,8 @@ const AddNote = ({ notes, setNotes, throwErrorMessage }) => {
     //   return;
     // }
     try {
-      const postNote = async newNote => {
-        const postedNote = await noteService.postNote(newNote);
+      const postNote = async (newNote, config) => {
+        const postedNote = await noteService.postNote(newNote, config);
         setNotes(notes.concat(postedNote.data));
         console.log(postedNote);
       };
@@ -22,7 +22,10 @@ const AddNote = ({ notes, setNotes, throwErrorMessage }) => {
         content: input,
         important
       };
-      postNote(newNote);
+      const config = {
+        headers: { Authorization: token }
+      };
+      postNote(newNote, config);
       setInput('');
     } catch (e) {
       throwErrorMessage(e);
