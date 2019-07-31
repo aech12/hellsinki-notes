@@ -3,16 +3,17 @@ import './App.sass';
 import noteService from './services/noteService';
 import AddNote from './containers/AddNote';
 import MapNotes from './containers/MapNotes';
+import ShowErrorMessage from './components/ShowError';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [showImportantOnly, setShowImportantOnly] = useState(false);
-  const [error, setError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     console.log(typeof notes);
     getNotes();
-  }, []);
+  }, [0]);
 
   const getNotes = async () => {
     const initialNotes = await noteService.getNotes();
@@ -26,7 +27,7 @@ const App = () => {
       );
       setNotes(newNotes);
     } catch (e) {
-      // setError('puterror');
+      throwErrorMessage(e);
     }
   };
   const deleteNote = async id => {
@@ -38,11 +39,17 @@ const App = () => {
   const filterImportant = () => {
     setShowImportantOnly(!showImportantOnly);
   };
-  // const importantClass = important ? 'important' : '';
+  const throwErrorMessage = e => {
+    setErrorMessage(e);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000);
+  };
 
   return (
     <div className='App'>
-      {/* <p>{showErrorMessage()}</p> */}
+      {/* <p>{()}</p> */}
+      <ShowErrorMessage message={errorMessage} />
       <div>
         <h1>Notes</h1>
         <ul>
@@ -54,7 +61,11 @@ const App = () => {
           />
         </ul>
       </div>
-      <AddNote notes={notes} setNotes={setNotes} />
+      <AddNote
+        notes={notes}
+        setNotes={setNotes}
+        throwErrorMessage={throwErrorMessage}
+      />
       <button onClick={filterImportant}>Show Important</button>
     </div>
   );

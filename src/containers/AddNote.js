@@ -3,7 +3,7 @@ import '../App.sass';
 import noteService from '../services/noteService';
 import NewNote from '../components/NewNote';
 
-const AddNote = ({ notes, setNotes }) => {
+const AddNote = ({ notes, setNotes, throwErrorMessage }) => {
   const [input, setInput] = useState('');
   const [important, setImportant] = useState(false);
 
@@ -25,7 +25,7 @@ const AddNote = ({ notes, setNotes }) => {
       postNote(newNote);
       setInput('');
     } catch (e) {
-      console.log(e);
+      throwErrorMessage(e);
     }
   };
 
