@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './App.sass';
 import noteService from './services/noteService';
-import AddNote from './containers/AddNote';
 import MapNotes from './containers/MapNotes';
 import ShowErrorMessage from './components/ShowError';
-import Logout from './components/Logout';
-import Login from './containers/Login';
+import LoginWrapper from './components/LoginWrapper';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
-  const [showImportantOnly, setShowImportantOnly] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // console.log(typeof notes);
     getNotes();
   }, []);
   useEffect(() => {
@@ -45,9 +41,6 @@ const App = () => {
     setNotes(notesWithoutDeletedNote);
   };
 
-  const filterImportant = () => {
-    setShowImportantOnly(!showImportantOnly);
-  };
   const throwErrorMessage = e => {
     setErrorMessage(e);
     setTimeout(() => {
@@ -57,38 +50,25 @@ const App = () => {
 
   return (
     <div className='App'>
-      {/* <p>{()}</p> */}
       <ShowErrorMessage message={errorMessage} />
       <h1>Notes</h1>
-      {user === null ? (
-        <Login throwErrorMessage={throwErrorMessage} setUser={setUser} />
-      ) : (
-        <div>
-          <p>Hello {user.userForToken.username}!</p>
-          <Logout setUser={setUser} />
-          <AddNote
-            notes={notes}
-            setNotes={setNotes}
-            throwErrorMessage={throwErrorMessage}
-            token={user.token}
-          />
-        </div>
-      )}
-      {/* <p>Hello {user !== null && user.userForToken.username}!</p>
-      <Login throwErrorMessage={throwErrorMessage} setUser={setUser} />
-      <Logout setUser={setUser} /> */}
-
+      <LoginWrapper
+        notes={notes}
+        setNotes={setNotes}
+        user={user}
+        setUser={setUser}
+        throwErrorMessage={throwErrorMessage}
+      />
       <div>
         <ul>
           <MapNotes
             notes={notes}
+            user={user}
             putImportant={putImportant}
             deleteNote={deleteNote}
-            showImportantOnly={showImportantOnly}
           />
         </ul>
       </div>
-      <button onClick={filterImportant}>Show Important</button>
     </div>
   );
 };

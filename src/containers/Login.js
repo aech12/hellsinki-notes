@@ -45,7 +45,6 @@ const Login = ({ throwErrorMessage, setUser }) => {
       // throwErrorMessage(e);
     }
   };
-  console.log('MOUNT');
 
   const usernameChange = username => {
     setUsername(username.target.value);
@@ -56,12 +55,18 @@ const Login = ({ throwErrorMessage, setUser }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input onChange={usernameChange} value={username} name='username' />
+      <input
+        onChange={usernameChange}
+        value={username}
+        name='username'
+        placeholder='username'
+      />
       <input
         onChange={passChange}
         type='password'
         value={password}
         name='password'
+        placeholder='password'
       />
       <button type='submit'>Login</button>
       <button onClick={handleSubmitGuest}>Login as Guest</button>
