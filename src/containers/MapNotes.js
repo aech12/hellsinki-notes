@@ -3,22 +3,22 @@ import Note from '../components/Note';
 
 const MapNotes = ({ notes, putImportant, deleteNote, user }) => {
   const [showImportantOnly, setShowImportantOnly] = useState(false);
-  const [showUserNotes, setShowUserNotes] = useState(false);
+  const [showUserNotesOnly, setShowUserNotesOnly] = useState(false);
 
   // notes.map(note => {
   //   if (note.user === user.userForToken.username) {
   //     return note.style = true
   //   }
   // })
-  const userNotes = showUserNotes
+  const notesFromUser = showUserNotesOnly
     ? notes.filter(note => note.user === user.userForToken.username)
     : notes;
   const filterUserNotes = () => {
-    setShowUserNotes(!showUserNotes);
+    setShowUserNotesOnly(!showUserNotesOnly);
   };
   const notesToMap = showImportantOnly
-    ? userNotes.filter(note => note.important)
-    : userNotes;
+    ? notesFromUser.filter(note => note.important)
+    : notesFromUser;
   const filterImportant = () => {
     setShowImportantOnly(!showImportantOnly);
   };
